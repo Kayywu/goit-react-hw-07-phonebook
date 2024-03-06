@@ -12,6 +12,8 @@ const contactSlice = createSlice({
   initialState: {
     list: [],
     filter: '',
+    status: 'idle',
+    error: null,
   },
   reducers: {
     setContacts: (state, action) => {
@@ -26,6 +28,20 @@ const contactSlice = createSlice({
     deleteContact: (state, action) => {
       state.list = state.list.filter((contact) => contact.id !== action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchContacts.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.list = action.payload;
+      })
+      .addCase(fetchContacts.rejected, (state, action) => {
+        state.status = 'error';
+        state.error = action.error.message;
+      });
   },
 });
 
